@@ -1,0 +1,10 @@
+
+
+Current screen:
+- Speed
+- Trip Time
+- Trip Distance
+- Avg Speed
+- Total distance
+- Total time
+- Max Speed

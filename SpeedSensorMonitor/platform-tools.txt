@@ -1,0 +1,16 @@
+cd C:\Users\radu.cazacu\AppData\Local\Android\sdk\platform-tools
+
+#list connected devices
+adb devices
+
+#set tcp port - for connected devices
+adb shell setprop service.adb.tcp.port 4444
+
+#restarting in TCP mode port
+adb tcpip 4444
+
+#connect to device via tcp port
+adb connect 192.168.0.190:4444
+
+#find the ip of device
+adb shell netcfg
