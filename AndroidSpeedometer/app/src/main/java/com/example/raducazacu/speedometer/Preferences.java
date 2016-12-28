@@ -1,4 +1,4 @@
-package com.example.raducazacu.speedsensormonitor;
+package com.example.raducazacu.speedometer;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;

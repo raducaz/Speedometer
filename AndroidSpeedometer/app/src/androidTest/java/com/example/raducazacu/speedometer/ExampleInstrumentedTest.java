@@ -1,4 +1,4 @@
-package com.example.raducazacu.speedsensormonitor;
+package com.example.raducazacu.speedometer;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

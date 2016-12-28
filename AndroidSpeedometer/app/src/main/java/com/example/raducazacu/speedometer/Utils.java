@@ -1,4 +1,4 @@
-package com.example.raducazacu.speedsensormonitor;
+package com.example.raducazacu.speedometer;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

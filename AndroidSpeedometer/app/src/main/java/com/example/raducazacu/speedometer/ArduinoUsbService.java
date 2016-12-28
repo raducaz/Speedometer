@@ -1,4 +1,4 @@
-package com.example.raducazacu.speedsensormonitor;
+package com.example.raducazacu.speedometer;
 
 import android.app.IntentService;
 import android.app.Notification;
@@ -23,8 +23,6 @@ import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 

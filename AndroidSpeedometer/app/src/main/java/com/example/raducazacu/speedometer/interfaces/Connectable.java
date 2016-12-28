@@ -1,4 +1,4 @@
-package com.example.raducazacu.speedsensormonitor.interfaces;
+package com.example.raducazacu.speedometer.interfaces;
 
 public interface Connectable {
 

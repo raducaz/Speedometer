@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SpeedSensorMonitor</string>
+    <string name="app_name">Android Speedometer</string>
     <string name="starter_app_name">Start Arduino Service</string>
     <string name="main_menu_settings_name">Settings</string>
     <string name="main_menu_exit_name">Exit</string>

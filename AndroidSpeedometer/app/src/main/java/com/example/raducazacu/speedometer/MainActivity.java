@@ -1,4 +1,4 @@
-package com.example.raducazacu.speedsensormonitor;
+package com.example.raducazacu.speedometer;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.hardware.usb.UsbManager;
@@ -25,18 +24,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.example.raducazacu.speedsensormonitor.interfaces.Connectable;
-
 public class MainActivity extends AppCompatActivity {
 
-    public static final int DISABLE_CONTROLS_TYPE 			= 0;
-    public static final int ENABLE_CONTROLS_TYPE 			= 1;
-    public static final int CLEAR_UI_TYPE 					= 2;
-    public static final int CHANGE_TITLE_TYPE 				= 3;
     public static final int SET_VIEW_FROM_PREFERENCES_TYPE 	= 4;
     public static final int SHOW_LATEST_MESSAGES 			= 5;
     public static final int CHAR_SEQUENCE_TYPE 				= 10;
@@ -44,7 +36,6 @@ public class MainActivity extends AppCompatActivity {
     public static final int INFO_MESSAGE_TYPE 				= 22;
     public static final int DEBUG_MESSAGE_TYPE 				= 24;
     public static final int CONNECTION_ACTION 				= 100;
-    public static final int EXIT_ACTION 					= 101;
     private int messageLevel_			= 22;
     private int cursorPosition_ = 0;
 
