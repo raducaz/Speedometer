@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">SpeedSensorMonitor</string>
+    <string name="starter_app_name">Start Arduino Service</string>
+    <string name="main_menu_settings_name">Settings</string>
+    <string name="main_menu_exit_name">Exit</string>
+    <string name="main_menu_connect_name">Connect</string>
+
+    <string name="terminal_activity_send">Send</string>
+
+    <string name="main_menu_reconnect_name">Reconnect</string>
+    <string name="no_usb_devices_attached_message">No USB devices are currently attached</string>
+    <string name="no_permissions_for_this_usb_device_message">No permissions to connect to USB device</string>
+    <string name="connected_to_usb_device_message">Connected to USB device</string>
+    <string name="disconnected_from_usb_device_message">Disconnected from USB device</string>
+    <string name="wait_dialog_message">Please wait...</string>
+    <string name="connect_fail_message">Fail to connect to </string>
+    <string name="usb_device_attached">USB device attached</string>
+    <string name="usb_device_detached">USB device detached</string>
+    <string name="prefix_out">&lt; </string>
+    <string name="prefix_in">&gt; </string>
+
+    <string name="pref_category_application_key">arduino_terminal_category_application</string>
+    <string name="pref_category_application_title">Application Preferences</string>
+    <string name="pref_close_on_detach_key">arduino_terminal_close_on_detach</string>
+    <string name="pref_close_on_detach_title">Exit on USB Detach</string>
+    <string name="pref_close_on_detach_summary">Close application when USB device is detached</string>
+</resources>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/pref_category_application_title"	android:key="@string/pref_category_application_key">
+
+        <CheckBoxPreference android:title="@string/pref_close_on_detach_title"
+            android:defaultValue="true" android:summary="@string/pref_close_on_detach_summary"
+            android:key="@string/pref_close_on_detach_key">
+        </CheckBoxPreference>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
