@@ -423,7 +423,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void signalToUi(int type, Object data) {
-        Runnable runnable = null;
+
         if (type == CONNECTION_ACTION) {
             onConnectMenu();
         } else if (type == CHAR_SEQUENCE_TYPE) {
