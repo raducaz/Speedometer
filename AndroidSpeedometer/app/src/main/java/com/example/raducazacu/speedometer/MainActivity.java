@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private int messageLevel_			= 22;
     private int cursorPosition_ = 0;
 
-    private static final String ACTION_USB_PERMISSION = "com.example.raducazacu.speedsensormonitor.USB_PERMISSION";
+    private static final String ACTION_USB_PERMISSION = "com.example.raducazacu.speedometer.USB_PERMISSION";
     private static final String TAG = "UsbActivity";
     private static final int scrollDelay = 300;
     static final int NO_USB_DEVICES_DIALOG = 1;
