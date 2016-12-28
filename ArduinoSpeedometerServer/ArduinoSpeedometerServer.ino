@@ -8,13 +8,18 @@
 #endif
 
 USB Usb;
-
 ADK adk(&Usb, "Radu Cazacu SRL",
               "USB Host Shield",
               "Arduino Terminal for Android",
               "2.0",
               "http://www.google.com",
               "0000000000000001");
+
+unsigned long duration; // duration for the rotations in ms
+unsigned long rotations;
+unsigned long totalDuration; 
+unsigned long totalRotations;
+short len = 170; // rotating made by magnet circle circumference in mm
 
 void setup()
 {
@@ -27,72 +32,86 @@ void setup()
   if (Usb.Init() == -1) {
     Serial.println("OSCOKIRQ failed to assert");
     while (1); //halt
-  }//if (Usb.Init() == -1...
-}
+  }
 
-void loop()
+  // Magnetic sensor pin
+  pinMode(7, INPUT);
+}
+char* readUsb()
 {
   uint8_t rcode;
-  uint8_t msg[64] = { 0x00 };
-  const char* recv = "Received: ";
-
+  uint16_t len = 64;
+  uint8_t msg[len] = { 0x00 };
+  
   Usb.Task();
-
   if ( adk.isReady() == false ) {
-    Serial.println("USB not ready");
     return;
   }
-  uint16_t len = 64;
-
+  
   rcode = adk.RcvData(&len, msg);
   Serial.print("Receive rcode:");
   Serial.println(rcode, HEX);
   if ( rcode & ( rcode != hrNAK )) {
-    USBTRACE2("Data rcv. :", rcode );
+    
   }
   if (len > 0) {
-    USBTRACE("\r\nData Packet.");
-
     Serial.print("Len:");
     Serial.println(len);
+
+    char data[len];
     for ( uint8_t i = 0; i < len; i++ ) {
-      Serial.print((char)msg[i]);
-    }
-    /* sending back what was received */
-    Serial.print("Sending:");
-    Serial.println(recv);
-    rcode = adk.SndData( strlen( recv ), (uint8_t *)recv );
-    Serial.print("Send rcode:");
-    Serial.println(rcode, HEX);
-    if(rcode == 0)
-    {
-      Serial.print("Sent data:");
-      Serial.println(recv);
-    }
-    
-    if (rcode & (rcode != hrNAK)) {
-      Serial.print(F("\r\nError data sent: "));
-      Serial.println(rcode, HEX);
-    }
-    Serial.print("Sending:");
-    Serial.println((char*)msg);
-    rcode = adk.SndData( strlen(( char * )msg ), msg );
-    Serial.print("Send rcode:");
-    Serial.println(rcode, HEX);
-    if(rcode == 0)
-    {
-      Serial.print("Sent data:");
-      Serial.println((char*)msg);
-    }
-    
-    if (rcode & (rcode != hrNAK)) {
-      Serial.print(F("\r\nError data sent: "));
-      Serial.println(rcode, HEX);
+      data[i] = (char)msg[i];
     }
 
-  }//if( len > 0 )...
+    return data;
+  }
 
-  delay( 1000 );
+  return msg;
+}
+uint8_t writeUsb(uint8_t* data)
+{
+  uint8_t rcode;
+  
+  Usb.Task();
+  if ( adk.isReady() == false ) {
+    return;
+  }
+  
+  Serial.print("Sending:");
+  Serial.println((char*)data);
+  rcode = adk.SndData( strlen((char*)data), data);
+  Serial.print("Send rcode:");
+  Serial.println(rcode, HEX);
+  
+  if (rcode & (rcode != hrNAK)) {
+    Serial.print(F("\r\nError data sent: "));
+    Serial.println(rcode, HEX);
+  }
+
+  return rcode;
+}
+
+void loop()
+{
+  readSpeedSensor(2 * pow(10, 6)); // scan for 2 seconds (in micro seconds)
+}
+
+void readSpeedSensor(short scanInterval)
+{
+  starttime = micros();
+  boolean prevState = 0;
+  rotations = 0;
+  duration = 0;
+  do
+  {
+    if(digitalRead(7) == 1 && prevState == 0)
+      rotations ++;
+
+    prevState = digitalRead(7);
+  }
+  while(micros() - starttime < scanInterval);
+  
+  duration = (micros() - starttime)*pow(10, 3); // duration in ms
 }
 
 
