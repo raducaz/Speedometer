@@ -27,7 +27,12 @@ import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import java.util.Iterator;
+import java.util.concurrent.ExecutionException;
+
 public class MainActivity extends AppCompatActivity {
+
+    private Trip currentTrip = new Trip(170); // TODO: Read this from App Settings
 
     public static final int SET_VIEW_FROM_PREFERENCES_TYPE 	= 4;
     public static final int SHOW_LATEST_MESSAGES 			= 5;
@@ -426,7 +431,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (type == CONNECTION_ACTION) {
             onConnectMenu();
-        } else if (type == CHAR_SEQUENCE_TYPE) {
+        } else if (type == CHAR_SEQUENCE_TYPE) { // Custom message from Service
             if (data == null || ((CharSequence) data).length() == 0) {
                 return;
             }
@@ -438,14 +443,66 @@ public class MainActivity extends AppCompatActivity {
             }
             final CharSequence tmpData = (CharSequence) data;
             addToHistory(tmpData);
-        } else if (type == BYTE_SEQUENCE_TYPE) {
+        } else if (type == BYTE_SEQUENCE_TYPE) { // Message from Arduino
             if (data == null || ((byte[]) data).length == 0) {
                 return;
             }
             final byte[] byteArray = (byte[]) data;
+
+            updateCurrentTrip(byteArray);
+
             addToHistory(byteArray);
         }
 
+    }
+
+    /**
+     * Processes the data from sensor server (Arduino)
+     * @param data: The data expected is like:
+     *            rotations;duration;totalRotations;totalDuration
+     *            where
+     *            rotations - is the number of rotations read in the corresponding duration
+     *            totalRotations - is the total rotations read in the total duration of time when the wheel spinned
+     *            (if the wheel stopped, the timer of the trip stops as well)
+     *
+     *            Note: durations are in ms
+     */
+    private void updateCurrentTrip(byte[] data)
+    {
+        String sData = new String(data);
+        if(sData.length()-1 >=0) {
+            sData = sData.substring(0, sData.length() - 1); // Remove the null character at the end inserted by UsbSend method on Arduino
+            String[] dataComponents = sData.split(";");
+
+            if (dataComponents.length == 4) // data is speed data valid
+            {
+                try {
+                    long rotations = Long.parseLong(dataComponents[0]);
+                    long duration = Long.parseLong(dataComponents[1]);
+                    long totalRotations = Long.parseLong(dataComponents[2]);
+                    long totalDuration = Long.parseLong(dataComponents[3]);
+
+                    currentTrip.Update(rotations, duration, totalRotations, totalDuration);
+
+                    TextView speedText = (TextView) findViewById(R.id.speedText);
+                    speedText.setText(currentTrip.getSpeedKmph(currentTrip.CurrentSpeed_mps));
+
+                    TextView distText = (TextView) findViewById(R.id.distText);
+                    distText.setText(currentTrip.getDistanceKm(currentTrip.Distance_m));
+
+                    TextView timeText = (TextView) findViewById(R.id.timeText);
+                    timeText.setText(currentTrip.getDuration(currentTrip.Duration_s));
+
+                    TextView avgSpeedText = (TextView) findViewById(R.id.avgSpeedText);
+                    avgSpeedText.setText(currentTrip.getSpeedKmph(currentTrip.AvgSpeed_mps));
+
+                    TextView maxSpeedText = (TextView) findViewById(R.id.maxSpeedText);
+                    maxSpeedText.setText(currentTrip.getSpeedKmph(currentTrip.MaxSpeed_mps));
+                }
+                catch (NumberFormatException e)
+                {}
+            }
+        }
     }
     private void addToHistory(CharSequence text) {
         if (text == null || text.length() == 0) return;

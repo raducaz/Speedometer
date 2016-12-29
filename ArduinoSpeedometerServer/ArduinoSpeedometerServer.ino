@@ -19,7 +19,6 @@ public:
   unsigned long duration; // in ms
   unsigned long totalRotations;
   unsigned long totalDuration; // in ms
-  //short len = 170; // rotating made by magnet circle circumference in mm - this is on device client - Android
   boolean prevState = 1; // no magnet present
 
   boolean isRunning = false;
@@ -78,14 +77,14 @@ ADK adk(&Usb, "Radu Cazacu SRL",
 
 void setup()
 {
-  Serial.begin(115200);
-#if !defined(__MIPSEL__)
-  while (!Serial); // Wait for serial port to connect - used on Leonardo, Teensy and other boards with built-in USB CDC serial connection
-#endif
-  Serial.println("\r\nADK demo start");
+  //Serial.begin(115200);
+//#if !defined(__MIPSEL__)
+//  while (!Serial); // Wait for serial port to connect - used on Leonardo, Teensy and other boards with built-in USB CDC serial connection
+//#endif
+//  Serial.println("\r\nBegin initial setup");
 
   if (Usb.Init() == -1) {
-    Serial.println("OSCOKIRQ failed to assert");
+//    Serial.println("OSCOKIRQ failed to assert");
     while (1); //halt
   }
 
@@ -104,52 +103,52 @@ void timerCallback(){
 }
 void loop()
 {
-  digital7.startSample();
-  delay(5000); // reasonalbe delay > 1s for geting rotations sample  
-  digital7.endSample();  
-
-  Serial.print(digital7.rotations);
-  Serial.print(" - ");
-  Serial.println(digital7.duration);
-  Serial.print("Total:");
-  Serial.print(digital7.totalRotations);
-  Serial.print(" - ");
-  Serial.println(digital7.totalDuration);
-
-
-  /* Send the data - this delays even more */
-  String sRotations = String(digital7.rotations);
-  String sDuration = String(digital7.duration);
-  String sTotalRotations = String(digital7.totalRotations);
-  String sTotalDuration = String(digital7.totalDuration);
-
-  String msg = sRotations + ";" + sDuration + ";" + sTotalRotations + ";" + sTotalDuration;
-  char* data;
-  msg.toCharArray(data,msg.length());
-  Serial.println(data);
-  writeUsb(data);
+  Usb.Task();
+  if ( adk.isReady() == false ) {
+//    Serial.println("USB not ready");
+  }
+  else
+  {
+    digital7.startSample();
+    delay(1000); // reasonalbe delay > 1s for geting rotations sample  
+    digital7.endSample();  
+  
+    /* Send the data - this delays even more */
+    String sRotations = String(digital7.rotations);
+    String sDuration = String(digital7.duration);
+    String sTotalRotations = String(digital7.totalRotations);
+    String sTotalDuration = String(digital7.totalDuration);
+  
+    String msg = sRotations + ";" + sDuration + ";" + sTotalRotations + ";" + sTotalDuration;
+    uint8_t data[msg.length()+1];
+    msg.toCharArray(data,msg.length()+1);
+    uint8_t dataLen = sizeof(data);
+  
+//    Serial.print("Send ");Serial.print(dataLen);Serial.println(" chars");
+    uint8_t rcode = adk.SndData( sizeof(data), data);
+//    Serial.println(rcode);
+  }
 }
-
 char* readUsb()
 {
   uint8_t rcode;
   uint16_t len = 64;
   uint8_t msg[len] = { 0x00 };
-  
+
   Usb.Task();
   if ( adk.isReady() == false ) {
-    return;
+    return 10;
   }
   
   rcode = adk.RcvData(&len, msg);
-  Serial.print("Receive rcode:");
-  Serial.println(rcode, HEX);
+//  Serial.print("Receive rcode:");
+//  Serial.println(rcode, HEX);
   if ( rcode & ( rcode != hrNAK )) {
-    
+      // Handle error  
   }
   if (len > 0) {
-    Serial.print("Len:");
-    Serial.println(len);
+//    Serial.print("Len:");
+//    Serial.println(len);
 
     char data[len];
     for ( uint8_t i = 0; i < len; i++ ) {
@@ -160,50 +159,6 @@ char* readUsb()
   }
 
   return msg;
-}
-uint8_t writeUsb(uint8_t* data)
-{
-  uint8_t rcode;
-  
-  Usb.Task();
-  if ( adk.isReady() == false ) {
-    return;
-  }
-  
-  Serial.print("Sending:");
-  Serial.println((char*)data);
-  rcode = adk.SndData( strlen((char*)data), data);
-  Serial.print("Send rcode:");
-  Serial.println(rcode, HEX);
-  
-  if (rcode & (rcode != hrNAK)) {
-    Serial.print(F("\r\nError data sent: "));
-    Serial.println(rcode, HEX);
-  }
-
-  return rcode;
-}
-
-void readSpeedSensor(short scanInterval)
-{
-  unsigned long starttime;
-  unsigned long rotations;
-  unsigned long duration;
-  
-  starttime = micros();
-  boolean prevState = 0;
-  rotations = 0;
-  duration = 0;
-  do
-  {
-    if(digitalRead(7) == 1 && prevState == 0)
-      rotations ++;
-
-    prevState = digitalRead(7);
-  }
-  while(micros() - starttime < scanInterval);
-  
-  duration = (micros() - starttime)*pow(10, 3); // duration in ms
 }
 
 
