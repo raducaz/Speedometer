@@ -32,7 +32,7 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Trip currentTrip = new Trip(170); // TODO: Read this from App Settings
+    private Trip currentTrip = new Trip(173); // TODO: Read this from App Settings
 
     public static final int SET_VIEW_FROM_PREFERENCES_TYPE 	= 4;
     public static final int SHOW_LATEST_MESSAGES 			= 5;

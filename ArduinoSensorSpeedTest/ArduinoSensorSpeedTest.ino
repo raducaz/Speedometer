@@ -92,6 +92,8 @@ void setup()
 void timerCallback(){
   controller.run();
 }
+
+double wheelLenght_mm = 170;
 void loop()
 {
   
@@ -107,6 +109,13 @@ void loop()
   
     String msg = sRotations + ";" + sDuration + ";" + sTotalRotations + ";" + sTotalDuration;
     Serial.println(msg); 
+
+    double sampleDistance_m = (digital7.rotations * wheelLenght_mm) * pow(10,-3);
+    double speed_mps = sampleDistance_m / (digital7.duration * pow(10, -3));
+    double speed_kmph = speed_mps * 3600 * pow(10, -3);
+    double rpm = (digital7.rotations / (double)digital7.duration) * pow(10,3) * 60;
+    Serial.print("Speed:");Serial.println(speed_kmph);
+    Serial.print("Rpm:");Serial.println(rpm);
     delay(500);
 }
 
