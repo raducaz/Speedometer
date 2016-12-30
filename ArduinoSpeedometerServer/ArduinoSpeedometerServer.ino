@@ -84,12 +84,25 @@ void setup()
 //  Serial.println("\r\nBegin initial setup");
 
   if (Usb.Init() == -1) {
-//    Serial.println("OSCOKIRQ failed to assert");
-    while (1); //halt
-  }
+  //    Serial.println("OSCOKIRQ failed to assert");
+      while (1); //halt
+    }
 
+  initSensorThread();
+
+}
+void timerCallback(){
+  controller.run();
+}
+void initSensorThread()
+{
+  Timer1.stop();
+
+  digital7 = SensorThread();
   // Magnetic sensor pin
   digital7.pin = 7;
+  digital7.totalRotations = 0;
+  digital7.totalDuration = 0;
   digital7.setInterval(1); // in ms
 
   controller.add(&digital7);
@@ -97,9 +110,6 @@ void setup()
   Timer1.initialize(500); // in micro second (us)
   Timer1.attachInterrupt(timerCallback);
   Timer1.start();
-}
-void timerCallback(){
-  controller.run();
 }
 void loop()
 {
@@ -109,6 +119,16 @@ void loop()
   }
   else
   {
+    char* rcvMsg = readUsb();
+    
+    if(strcmp(rcvMsg, "RESETRESET") == 0) //TODO: check the source of this duplication at receive
+    {
+      //Serial.println("Reseting");
+      
+      initSensorThread();
+      return;
+    }
+    
     digital7.startSample();
     delay(1000); // reasonalbe delay > 1s for geting rotations sample  
     digital7.endSample();  
