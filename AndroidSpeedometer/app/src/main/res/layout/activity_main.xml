@@ -6,18 +6,32 @@
     android:showDividers="middle"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:focusableInTouchMode="true"
-    >
+    android:focusableInTouchMode="true">
 
-    <TextView
-        android:layout_height="wrap_content"
-        android:textSize="30sp"
-        android:textStyle="bold"
-        android:textAlignment="center"
-        android:text="TRIP"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:background="@drawable/border"
-        android:padding="1dip"/>
+        android:showDividers="middle"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_height="match_parent"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:textAlignment="center"
+            android:text="TRIP"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/border"
+            android:padding="1dip"/>
+        <Button android:layout_width="wrap_content"
+            android:text="@string/terminal_activity_reset_trip"
+            android:layout_centerVertical="true"
+            android:id="@+id/buttonResetTrip"
+            android:layout_height="wrap_content"
+            android:onClick="resetTrip" >
+        </Button>
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -240,6 +254,7 @@
         <EditText android:id="@+id/sendText"
             android:layout_weight="1"
             android:maxLines="1"
+            android:text="15;1000;1730;12000"
             android:inputType="textNoSuggestions|textVisiblePassword"
             android:imeOptions="flagNoExtractUi|actionSend"
             android:layout_alignParentLeft="true"
@@ -247,6 +262,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_margin="2dip"></EditText>
+
         <Button android:layout_width="wrap_content"
             android:text="@string/terminal_activity_send"
             android:layout_centerVertical="true"

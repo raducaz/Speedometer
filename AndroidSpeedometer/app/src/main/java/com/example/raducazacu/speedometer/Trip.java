@@ -37,11 +37,21 @@ public class Trip {
 
         Duration_s = totalDuration_ms * Math.pow(10, -3);
 
-        if(Duration_s != 0)
+        if(Duration_s != 0){
             AvgSpeed_mps = Distance_m / Duration_s;
+        }
+        else {
+            // Only at the begining and at reset time
+            AvgSpeed_mps = 0;
+            MaxSpeed_mps = 0;
+        }
 
         if(MaxSpeed_mps < CurrentSpeed_mps)
             MaxSpeed_mps = CurrentSpeed_mps;
+    }
+    public void setWheelSpeed(int wheelLenght_mm)
+    {
+        this.wheelLenght_mm = wheelLenght_mm;
     }
     public String getSpeedKmph(double speed_mps)
     {

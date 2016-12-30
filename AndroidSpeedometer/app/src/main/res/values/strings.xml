@@ -6,6 +6,8 @@
     <string name="main_menu_connect_name">Connect</string>
 
     <string name="terminal_activity_send">Send</string>
+    <string name="terminal_activity_reset_trip">Reset</string>
+
 
     <string name="main_menu_reconnect_name">Reconnect</string>
     <string name="no_usb_devices_attached_message">No USB devices are currently attached</string>
@@ -24,4 +26,6 @@
     <string name="pref_close_on_detach_key">arduino_terminal_close_on_detach</string>
     <string name="pref_close_on_detach_title">Exit on USB Detach</string>
     <string name="pref_close_on_detach_summary">Close application when USB device is detached</string>
+    <string name="pref_wheel_size">wheel_size</string>
+    <string name="pref_simulate_usb_input">simulate_usb_input</string>
 </resources>

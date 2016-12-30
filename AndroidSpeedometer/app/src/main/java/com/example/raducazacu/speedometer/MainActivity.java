@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.hardware.usb.UsbManager;
@@ -15,6 +16,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -28,6 +30,8 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import java.util.Iterator;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
@@ -83,6 +87,11 @@ public class MainActivity extends AppCompatActivity {
                         Bundle bb = msg.getData();
                         byte[] data = bb.getByteArray(ArduinoUsbService.MSG_KEY);
                         signalToUi(BYTE_SEQUENCE_TYPE, data);
+                        break;
+                    case ArduinoUsbService.MSG_SEND_ECHO_TO_SERVER:
+                        Bundle be = msg.getData();
+                        byte[] eData = be.getByteArray(ArduinoUsbService.MSG_KEY);
+                        signalToUi(BYTE_SEQUENCE_TYPE, eData);
                         break;
                     case ArduinoUsbService.MSG_SEND_ASCII_TO_SERVER:
                         Bundle sb = msg.getData();
@@ -208,19 +217,24 @@ public class MainActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
-        filter.addAction(UsbManager.ACTION_USB_ACCESSORY_ATTACHED);
-        filter.addAction(UsbManager.ACTION_USB_ACCESSORY_DETACHED);
-
+        // Set the view for preferences
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         if (resources_ == null) {
             resources_ = getResources();
         }
+
+        IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
+        filter.addAction(UsbManager.ACTION_USB_ACCESSORY_ATTACHED);
+        filter.addAction(UsbManager.ACTION_USB_ACCESSORY_DETACHED);
 
         logMessage("before register receiver");
 
         doBindService();
 
         setContentView(R.layout.activity_main);
+
+        int wheelSize = Integer.parseInt(prefs.getString(resources_.getString(R.string.pref_wheel_size), "173"));
+        currentTrip = new Trip(wheelSize);
     }
 
     @Override
@@ -399,7 +413,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             Log.d(TAG, "USBActivity sendData: TO_SERVER " + data + ", mService: " + mService_);
             Message msg = Message.obtain(null,
-                    ArduinoUsbService.MSG_SEND_ASCII_TO_SERVER, data);
+                    ArduinoUsbService.MSG_SEND_ASCII_TO_SERVER);// data);
             msg.replyTo = mMessenger_;
             Bundle b = new Bundle();
             if (mService_ != null) {
@@ -469,6 +483,10 @@ public class MainActivity extends AppCompatActivity {
      */
     private void updateCurrentTrip(byte[] data)
     {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        int wheelSize = Integer.parseInt(prefs.getString(resources_.getString(R.string.pref_wheel_size), "173"));
+        currentTrip.setWheelSpeed(wheelSize);
+
         String sData = new String(data);
         if(sData.length()-1 >=0) {
             sData = sData.substring(0, sData.length() - 1); // Remove the null character at the end inserted by UsbSend method on Arduino
@@ -535,55 +553,59 @@ public class MainActivity extends AppCompatActivity {
 
         TextView logText = (TextView) findViewById(R.id.text_log);
 
-        CharSequence allText = logText.getText();
-        int length = allText.length();
-        int lf_index = 0;
-        int start = 0;
-        if (length == 0) {
-            cursorPosition_ = 0;
-            start = 0;
-            lf_index = 0;
-        } else {
-            lf_index = 0;
+        String sData = new String(data);
+        sData += System.getProperty("line.separator");
+        logText.append(sData);
 
-            for (int i=length-1; i>=0; i--) {
-                if (allText.charAt(i) == '\n') {
-                    lf_index = i;
-                    break;
-                }
-            }
-            if (lf_index == 0) {
-                if (allText.charAt(0) == '\n') {
-                    lf_index = 1;
-                    if (cursorPosition_ == 0) cursorPosition_ = 1;
-                }
-            } else {
-                lf_index++;
-            }
-            start = cursorPosition_ - lf_index;
-
-        }
-        if (debug_) {
-            Log.i(TAG, "addToHistory1: length="+length+", cursorPosition="+cursorPosition_+", lf_index="+lf_index+", ALL_TEXT="+allText);
-        }
-
-        CharSequence prefix = allText.subSequence(lf_index, length);
-        StringBuilder line = new StringBuilder(prefix);
-
-        if (debug_) {
-            Log.i(TAG, "addToHistory2: start="+start+", line="+line);
-        }
-
-        start = Utils.processCRBytes(line, data, start);
-
-        if (lf_index < length) ((Editable) allText).delete(lf_index, length);
-        ((Editable) allText).append(line);
-        cursorPosition_ = lf_index + start;
-
-        if (debug_) {
-            Log.i(TAG, "addToHistory3: start="+start+", cursorPosition="+cursorPosition_+
-                    ", newLength="+logText.getText().length()+", line="+line+", NEW_ALL_TEXT="+logText.getText());
-        }
+//        CharSequence allText = logText.getText();
+//        int length = allText.length();
+//        int lf_index = 0;
+//        int start = 0;
+//        if (length == 0) {
+//            cursorPosition_ = 0;
+//            start = 0;
+//            lf_index = 0;
+//        } else {
+//            lf_index = 0;
+//
+//            for (int i=length-1; i>=0; i--) {
+//                if (allText.charAt(i) == '\n') {
+//                    lf_index = i;
+//                    break;
+//                }
+//            }
+//            if (lf_index == 0) {
+//                if (allText.charAt(0) == '\n') {
+//                    lf_index = 1;
+//                    if (cursorPosition_ == 0) cursorPosition_ = 1;
+//                }
+//            } else {
+//                lf_index++;
+//            }
+//            start = cursorPosition_ - lf_index;
+//
+//        }
+//        if (debug_) {
+//            Log.i(TAG, "addToHistory1: length="+length+", cursorPosition="+cursorPosition_+", lf_index="+lf_index+", ALL_TEXT="+allText);
+//        }
+//
+//        CharSequence prefix = allText.subSequence(lf_index, length);
+//        StringBuilder line = new StringBuilder(prefix);
+//
+//        if (debug_) {
+//            Log.i(TAG, "addToHistory2: start="+start+", line="+line);
+//        }
+//
+//        start = Utils.processCRBytes(line, data, start);
+//
+//        if (lf_index < length) ((Editable) allText).delete(lf_index, length);
+//        ((Editable) allText).append(line);
+//        cursorPosition_ = lf_index + start;
+//
+//        if (debug_) {
+//            Log.i(TAG, "addToHistory3: start="+start+", cursorPosition="+cursorPosition_+
+//                    ", newLength="+logText.getText().length()+", line="+line+", NEW_ALL_TEXT="+logText.getText());
+//        }
 
         scrollDown1();
     }
@@ -609,16 +631,24 @@ public class MainActivity extends AppCompatActivity {
     /** Called when the user clicks the Send button */
     public void sendMessage(View view) {
 
+//        EditText sendText = (EditText) findViewById(R.id.sendText);
+//        CharSequence text = sendText.getText();
+//
+//        if (!(text == null || text.length() == 0)) {
+//
+//            sendData(text + "\r\n");
+//        }
+
         EditText sendText = (EditText) findViewById(R.id.sendText);
-        CharSequence text = sendText.getText();
-
-        if (!(text == null || text.length() == 0)) {
-
-            sendData(text + "\r\n");
-        }
+        CharSequence sMsg = sendText.getText();
+        byte[] msg = sMsg.toString().getBytes();
+        sendEcho(msg);
     }
 
+    public void resetTrip(View view) {
 
+        sendData("RESET");
+    }
 
 
 

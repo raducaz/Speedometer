@@ -3,9 +3,18 @@
 
     <PreferenceCategory android:title="@string/pref_category_application_title"	android:key="@string/pref_category_application_key">
 
-        <CheckBoxPreference android:title="@string/pref_close_on_detach_title"
-            android:defaultValue="true" android:summary="@string/pref_close_on_detach_summary"
-            android:key="@string/pref_close_on_detach_key">
+        <EditTextPreference android:title="Wheel Size"
+            android:inputType="number"
+            android:defaultValue="173"
+            android:summary="The size of the circle described by the magnet (in mm)"
+            android:key="wheel_size">
+        </EditTextPreference>
+
+        <CheckBoxPreference
+            android:title="Simulate USB Input"
+            android:defaultValue="false"
+            android:summary="Simulate the USB input"
+            android:key="simulate_usb_input">
         </CheckBoxPreference>
 
     </PreferenceCategory>
