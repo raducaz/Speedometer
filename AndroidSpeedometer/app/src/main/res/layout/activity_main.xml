@@ -24,13 +24,14 @@
             android:layout_weight="1"
             android:background="@drawable/border"
             android:padding="1dip"/>
-        <Button android:layout_width="wrap_content"
+
+        <Button
+            android:layout_width="wrap_content"
             android:text="@string/terminal_activity_reset_trip"
             android:layout_centerVertical="true"
             android:id="@+id/buttonResetTrip"
             android:layout_height="wrap_content"
-            android:onClick="resetTrip" >
-        </Button>
+            android:onClick="resetTrip" />
     </LinearLayout>
 
     <LinearLayout
