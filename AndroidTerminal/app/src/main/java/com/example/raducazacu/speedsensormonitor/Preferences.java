@@ -20,7 +20,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        addPreferencesFromResource(R.xml.preferences);
+        addPreferencesFromResource(R.xml.preferences);
     }
 
     @Override
@@ -88,10 +88,11 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
     private String getSummaryForKey(String key) {
         String summary = null;
 
-//        if (          getString(R.string.pref_close_on_detach_key).equals(key)) {
-//            summary = getString(R.string.pref_close_on_detach_summary);
-//
-//        } else if (   getString(R.string.pref_display_orientation_key).equals(key)) {
+        if (getString(R.string.pref_wheel_size).equals(key)) {
+            summary = getString(R.string.pref_wheel_size);
+
+        }
+//        else if (   getString(R.string.pref_display_orientation_key).equals(key)) {
 //            summary = getString(R.string.pref_display_orientation_summary);
 //
 //        } else if (   getString(R.string.pref_keyboard_type_key).equals(key)) {

@@ -28,8 +28,6 @@
         </activity>
 
         <service android:name=".ArduinoUsbService"  />
-
-        <uses-feature android:name="com.android.hardware.usb.accessory" />
     </application>
 
 </manifest>
